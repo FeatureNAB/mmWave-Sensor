@@ -1,0 +1,101 @@
+esphome:
+  name: sen0609
+  friendly_name: SEN0609
+  on_boot:
+    priority: 600
+    then:
+      - delay: 3s
+      - uart.write: "setUartOutput 1 1"
+
+external_components:
+  # Pulls the custom serial component directly from GitHub
+  - source: github://ssieb/custom_components
+    components: [ serial ]
+
+esp32:
+  board: esp32-c6-devkitc-1
+  framework:
+    type: esp-idf
+  cpu_frequency: 80Mhz
+
+# Enable logging
+logger:
+  level: DEBUG
+
+# Enable Home Assistant API
+api:
+
+ota:
+  - platform: esphome
+    password: "d943b899ec8249dfe91b769a6f9e4dc6"
+
+wifi:
+  networks:
+  - ssid: !secret ssid_downstairs
+    password: !secret password_downstairs  
+  - ssid: !secret ssid_upstairs
+    password: !secret password_upstairs
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "SEN0609 Fallback Hotspot"
+    password: "password"
+
+captive_portal:
+
+i2c:
+  sda: GPIO22
+  scl: GPIO23
+  scan: true
+
+uart:
+  id: uart_sen0609
+  tx_pin: GPIO16
+  rx_pin: GPIO17
+  baud_rate: 9600
+  debug:
+    direction: BOTH
+    dummy_receiver: false
+    after:
+      delimiter: "\n"
+    sequence:
+      - lambda: UARTDebug::log_string(direction, bytes);
+
+text_sensor:
+  - platform: serial
+    uart_id: uart_sen0609
+    name: "UART Raw Text"
+    id: UART_Text
+    icon: "mdi:format-text"
+    internal: false 
+    on_value:
+      lambda: |-
+        if (id(UART_Text).state.substr(0,6) == "$DFHPD") {
+          if (id(UART_Text).state.substr(7,1) == "1") {
+            if (id(uart_presence).state == false) {
+              id(uart_presence).publish_state(true);
+            }
+          }
+          if (id(UART_Text).state.substr(7,1) == "0") {
+            if (id(uart_presence).state == true) {
+              id(uart_presence).publish_state(false);
+            }
+          }
+        }
+
+binary_sensor:
+  - platform: template
+    name: "Presence"
+    id: uart_presence
+    device_class: occupancy
+
+sensor:
+  - platform: internal_temperature
+    name: "ESP32 Internal Temperature"
+    update_interval: 30s
+    entity_category: diagnostic
+    disabled_by_default: false
+    unit_of_measurement: °C
+    state_class: measurement
+    device_class: temperature
+
