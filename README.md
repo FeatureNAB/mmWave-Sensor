@@ -51,7 +51,7 @@ ESPHome has a [desktop installer](https://esphome.io/install/) now! Use the ESPH
 
 #### 4. 3D Printing the Enclosure
 Note: This project has a bunch of variations, I just uploaded the simplest versions to start, the others will be added very soon!
-Download the `3D_Files.zip` from the Releases tab and print the enclosure. 
+Download the `FullAssembly.3mf` from the repo or the Releases tab and print the enclosure. 
 *   The `.3mf` file is pre-configured and ready to print.
 
 ## Home Assistant Dashboard
