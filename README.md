@@ -52,7 +52,8 @@ ESPHome has a [desktop installer](https://esphome.io/install/) now! Use the ESPH
 #### 4. 3D Printing the Enclosure
 Note: This project has a bunch of variations, I just uploaded the simplest versions to start, the others will be added very soon!
 Download the `FullAssembly.3mf` from the repo or the Releases tab and print the enclosure. 
-*   The `.3mf` file is pre-configured and ready to print.
+
+**Very Important!** - The tightening ring MUST be printed at 0.12mm layer height or the threads will come out weird. I think everything else should be fine at 0.2mm, let me know if it isnt!
 
 ## Home Assistant Dashboard
 
