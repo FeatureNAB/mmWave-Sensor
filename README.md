@@ -37,7 +37,7 @@ This PCB supports two different mmWave radar modules, but only one can be connec
 #### Option A: LD2450 
 | Part Name | Qty | Notes | Sourcing Options |
 | :--- | :---: | :--- | :--- |
-| **LD2450 mmWave Board** | 1 | Target tracking mmWave sensor. | [AliExpress](https://s.click.aliexpress.com/e/_c3RyXVX3) |
+| **LD2450 mmWave Board** | 1 | Target tracking mmWave sensor. Buying a 2-pack is cheapest, even cheaper than a 5-pack somehow. | [AliExpress](https://s.click.aliexpress.com/e/_c3RyXVX3) |
 | **Dual Row 4-pin Header (2mm)** | 1 | Connects the LD2450 module to the custom PCB. **Note: This is 2mm pitch! Not the typical 2.54mm pitch - this is dictated by the connector the LD2450 uses** | [Mouser](https://mou.sr/3VlU9um) |
 
 #### Option B: DFRobot SEN0609
