@@ -27,7 +27,7 @@ These parts are required regardless of which mmWave sensor you choose to use.
 | Part Name | Qty | Notes | Sourcing Options |
 | :--- | :---: | :--- | :--- |
 | **Seeed XIAO ESP32-C6** | 1 | The main microcontroller. Cheaper from Seeedstudio directly, bundle of 3 means $4.35 per board | [SeeedStudio](https://www.seeedstudio.com/Seeed-StudioXIAO-ESP32C6-3PCS-p-5918.html?sensecap_affiliate=dzMqXsY&referring_service=link) <br> [AliExpress](https://s.click.aliexpress.com/e/_c4aRdovX) |
-| **7-pin Header** | 2 | Connects the XIAO ESP32 to the custom PCB. | [Mouser](https://mou.sr/3U0VYMP) |
+| **7-pin Header** | 2 | Connects the XIAO ESP32 to the custom PCB. | [Mouser](https://mou.sr/3U0VYMP) <br> [AliExpress](https://www.aliexpress.us/item/3256803935997942.html) |
 
 ---
 
@@ -38,13 +38,13 @@ This PCB supports two different mmWave radar modules, but only one can be connec
 | Part Name | Qty | Notes | Sourcing Options |
 | :--- | :---: | :--- | :--- |
 | **LD2450 mmWave Board** | 1 | Target tracking mmWave sensor. Buying a 2-pack is cheapest, even cheaper than a 5-pack somehow. | [AliExpress](https://s.click.aliexpress.com/e/_c3RyXVX3) |
-| **Dual Row 4-pin Header (2mm)** | 1 | Connects the LD2450 module to the custom PCB. **Note: This is 2mm pitch! Not the typical 2.54mm pitch - this is dictated by the connector the LD2450 uses** | [Mouser](https://mou.sr/3VlU9um) |
+| **Dual Row 4-pin Header (2mm)** | 1 | Connects the LD2450 module to the custom PCB. **Note: This is 2mm pitch! Not the typical 2.54mm pitch - this is dictated by the connector the LD2450 uses** | [Mouser](https://mou.sr/3VlU9um) <br> [AliExpress](https://www.aliexpress.us/item/2255800411202763.html) |
 
 #### Option B: DFRobot SEN0609
 | Part Name | Qty | Notes | Sourcing Options |
 | :--- | :---: | :--- | :--- |
 | **DFRobot mmWave Board** | 1 | DFRobot human presence sensor. | [Mouser](https://mou.sr/3TrZVKl) |
-| **5-pin Header** | 1 | Connects the DFRobot module to the custom PCB. | [Mouser](https://mou.sr/4jxkbEL) |
+| **5-pin Header** | 1 | Connects the DFRobot module to the custom PCB. | [Mouser](https://mou.sr/4jxkbEL) <br> [AliExpress](https://www.aliexpress.us/item/3256803935997942.html) |
 
 ---
 
@@ -53,7 +53,7 @@ Want to add temperature sensing or improve power stability? These parts are comp
 
 | Part Name | Qty | Notes | Sourcing Options |
 | :--- | :---: | :--- | :--- |
-| **5-pin Header** | 1 | Required if you want to expose the I2C connector. | [Mouser](https://mou.sr/4jxkbEL) |
+| **5-pin Header** | 1 | Required if you want to expose the I2C connector. | [Mouser](https://mou.sr/4jxkbEL) <br> [AliExpress](https://www.aliexpress.us/item/3256803935997942.html) |
 | **Adafruit SHTC3** | 1 | I2C Temperature & Humidity Sensor. | [Mouser](https://mou.sr/4xZLXgK) |
 | **SMD Capacitors** | 2 total | One of each. Both 0805 package size, one 100nF and one 10uF. Basically any caps with the same rating and size will do. | [100nF 0805](https://mou.sr/3TBZTj8) <br> [10uF 0805](https://mou.sr/4AOrj5Q) |
 
@@ -65,16 +65,32 @@ I designed the PCB to be manufactured and assembled by [JLCPCB](https://jlcpcb.c
 3. Choose your finish, I used ENIG and black soldermask, which was entirely based on aesthetics and is not essential.
 5. All the other settings should be fine on their defaults. Order and wait for the goods to arrive!
    
+### Hardware Assembly
+1. Solder the two **7-pin headers** to connect the Seeed XIAO ESP32-C6 to the custom PCB.
+2. Solder the radar header (**2×4-pin 2.0 mm pitch** for the LD2450, or **5-pin 2.54 mm** for the DFRobot SEN0609) and plug in your radar module.
+3. *(Optional)* Solder the **0805 SMD capacitors** (`100 nF` and `10 µF`) and the **5-pin I2C header** if adding the Adafruit SHTC3 sensor.
+
 ### Firmware
+ESPHome has a [desktop installer](https://esphome.io/install/) now! Use [`LD2450.yaml`](LD2450.yaml) to flash over USB to the ESP32-C6:
+1. Create a `secrets.yaml` in the root directory with your `wifi_ssid`, `wifi_password`, `friendly_name`, and API/OTA keys.
+2. At the top of [`LD2450.yaml`](LD2450.yaml), choose your connectivity mode under `substitutions`:
+   - **Wi-Fi** (default): `use_wifi: true`, `use_ble_proxy: true` (optional), `use_zigbee: false`
+   - **Zigbee**: `use_wifi: false`, `use_zigbee: true`
+3. Compile and flash via ESPHome over USB.
 
-ESPHome has a [desktop installer](https://esphome.io/install/) now! Use the ESPHome yaml to install over USB to the ESP32. `secrets.yaml` is used for wifi passwords etc, so fill those in and save it in the same root directory.
+### 3D Printing & Enclosure Assembly
+Parametric FreeCAD (`.FCStd`) and `.step` files for all parts are in [`CAD/`](CAD/), along with [`CAD/Assembly.FCStd`](CAD/Assembly.FCStd):
+- **`Enclosure`** — Main sensor housing
+- **`BackCoverBall`** / **`TopCapBall`** — Snap-fit back cover or top cap with an upgraded **Ø12 mm** ball joint
+- **`Socket`** — **26 × 95 mm** flat Command-Strip-compatible wall/surface mount with a tapered clamping collet and **45° print-friendly threads**
+- **`SocketRound`** — **Ø50 mm** round base variant with the same upgraded tapered clamping collet and **45° threads**
+- **`Nut`** — Fluted clamping nut with a matching internal taper and **45° threads**
 
-
-#### 3D Printing the Enclosure
-Note: This project has a bunch of variations, I just uploaded the simplest versions to start, the others will be added very soon!
-Download the `FullAssembly.3mf` from the repo or the Releases tab and print the enclosure. 
-
-**Very Important!** - The tightening ring MUST be printed at 0.12mm layer height or the threads will come out weird. I think everything else should be fine at 0.2mm, let me know if it isnt!
+**Print & Assembly Tips:**
+1. Print `Nut` and `Socket` at **0.12 mm layer height** for crisp threads (45° thread flanks print cleanly without supports); `Enclosure`, `BackCoverBall`, and `TopCapBall` print well at **0.20 mm**.
+2. Slide the assembled PCB into `Enclosure` and fit `BackCoverBall` (or `TopCapBall`).
+3. Slip `Nut` over the ball neck, press the Ø12 mm ball into the `Socket` collet cup, and tighten `Nut` onto the tapered collet to lock the angle against USB cable torque.
+4. Apply a standard 3M Command Strip to the flat back of `Socket` to mount.
 
 ## Home Assistant Dashboard
 
