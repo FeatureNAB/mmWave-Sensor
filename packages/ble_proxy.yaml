@@ -3,7 +3,9 @@
 
 esp32_ble_tracker:
   scan_parameters:
-    active: false  # Passive RSSI advertisements only
+    active: false    # Passive RSSI advertisements only
+    interval: 320ms
+    window: 120ms    # 37.5% BLE duty cycle for reliable beacon/iPhone capture
 
 bluetooth_proxy:
   active: false    # Set true only if you need active BLE device connections
