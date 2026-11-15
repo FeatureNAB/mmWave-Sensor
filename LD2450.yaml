@@ -1,5 +1,24 @@
+substitutions:
+  # Connectivity options (true/false)
+  # - Wi-Fi mode: use_wifi: true, use_zigbee: false
+  # - Zigbee mode: use_wifi: false, use_zigbee: true
+  use_wifi: true
+  use_ble_proxy: true   # Only active when use_wifi is true
+  use_zigbee: false
+
+packages:
+  wifi: !include
+    file: packages/wifi.yaml
+    condition: ${use_wifi in [true, "true", "True"]}
+  ble_proxy: !include
+    file: packages/ble_proxy.yaml
+    condition: ${(use_wifi in [true, "true", "True"]) and (use_ble_proxy in [true, "true", "True"])}
+  zigbee: !include
+    file: packages/zigbee.yaml
+    condition: ${use_zigbee in [true, "true", "True"]}
+
 esphome:
-  name: LD2450
+  name: ld2450
   friendly_name: !secret friendly_name
 
 # Underclocking to half the normal speed for heat management
@@ -12,32 +31,18 @@ esp32:
 # Enable logging
 logger:
 
-# Enable Home Assistant API
-api:
-  encryption:
-    #key: !secret "api_encryption_key"
-
-# Optional, allow you to flash new firmware over Wifi. 
-# ota:
-#   - platform: esphome
-#     password: "change_me"
-
-wifi:
-  networks:
-  - ssid: !secret wifi_ssid
-    password: !secret wifi_password  
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    ssid: "LD2450 Fallback Hotspot"
-    password: !secret ap_password  
-
-captive_portal:
-
 i2c:
   sda: GPIO22
   scl: GPIO23
   scan: true
+
+uart:
+  id: uart_ld2450
+  tx_pin: GPIO16
+  rx_pin: GPIO17
+  baud_rate: 256000
+  parity: NONE
+  stop_bits: 1
 
 ld2450:
   id: ld2450_radar
@@ -93,6 +98,16 @@ switch:
       name: "Bluetooth"
     multi_target:
       name: "Multi Target Tracking"
+  - platform: gpio
+    pin: GPIO3
+    id: rf_switch_power
+    internal: true
+    restore_mode: ALWAYS_OFF   # Drives GPIO3 LOW (enables RF switch on XIAO ESP32-C6)
+  - platform: gpio
+    pin: GPIO14
+    id: antenna_select
+    internal: true
+    restore_mode: ALWAYS_OFF   # Drives GPIO14 LOW (selects onboard ceramic antenna)
 
 select:
   - platform: ld2450
@@ -150,55 +165,68 @@ sensor:
     ld2450_id: ld2450_radar
     target_count:
       name: Presence Target Count
-  - platform: ld2450
-    ld2450_id: ld2450_radar
     still_target_count:
       name: Still Target Count
-  - platform: ld2450
-    ld2450_id: ld2450_radar
     moving_target_count:
       name: Moving Target Count
-  - platform: ld2450
-    ld2450_id: ld2450_radar
     target_1:
       x:
         name: Target-1 X
+        filters: &throttle_1s
+          - throttle: 1000ms
       y:
         name: Target-1 Y
+        filters: *throttle_1s
       speed:
         name: Target-1 Speed
+        filters: *throttle_1s
       angle:
         name: Target-1 Angle
+        filters: *throttle_1s
       distance:
         name: Target-1 Distance
+        filters: *throttle_1s
       resolution:
         name: Target-1 Resolution
+        filters: *throttle_1s
     target_2:
       x:
         name: Target-2 X
+        filters: *throttle_1s
       y:
         name: Target-2 Y
+        filters: *throttle_1s
       speed:
         name: Target-2 Speed
+        filters: *throttle_1s
       angle:
         name: Target-2 Angle
+        filters: *throttle_1s
       distance:
         name: Target-2 Distance
+        filters: *throttle_1s
       resolution:
         name: Target-2 Resolution
+        filters: *throttle_1s
     target_3:
       x:
         name: Target-3 X
+        filters: *throttle_1s
       y:
         name: Target-3 Y
+        filters: *throttle_1s
       speed:
         name: Target-3 Speed
+        filters: *throttle_1s
       angle:
         name: Target-3 Angle
+        filters: *throttle_1s
       distance:
         name: Target-3 Distance
+        filters: *throttle_1s
       resolution:
         name: Target-3 Resolution
+        filters: *throttle_1s
     zone_1:
       target_count:
         name: Zone-1 All Target Count

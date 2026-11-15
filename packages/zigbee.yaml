@@ -1,0 +1,5 @@
+# Native Zigbee configuration (ESP32-C6 802.15.4 radio)
+# Included when substitutions.use_zigbee is true.
+# Note: For a dedicated Zigbee device/router, set use_wifi: false (updates require USB).
+
+zigbee:

@@ -1,0 +1,25 @@
+# Wi-Fi, Home Assistant API, and OTA configuration
+# Included when substitutions.use_wifi is true.
+
+# Enable Home Assistant API
+api:
+  encryption:
+    # Generate a key at https://esphome.io/components/api/ and set it in secrets.yaml
+    # key: !secret api_encryption_key
+
+# Allow flashing new firmware over Wi-Fi
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+
+  # Enable fallback hotspot (captive portal) in case Wi-Fi connection fails
+  ap:
+    ssid: "LD2450 Fallback Hotspot"
+    password: !secret ap_password
+
+captive_portal:
