@@ -1,5 +1,5 @@
 esphome:
-  name: LD2450
+  name: ld2450
   friendly_name: !secret friendly_name
 
 # Underclocking to half the normal speed for heat management
@@ -38,6 +38,16 @@ i2c:
   sda: GPIO22
   scl: GPIO23
   scan: true
+
+# LD2450 is wired to the XIAO hardware UART pins on the HAT:
+# D6 (GPIO16) -> /TX, D7 (GPIO17) -> /RX
+uart:
+  id: uart_ld2450
+  tx_pin: GPIO16
+  rx_pin: GPIO17
+  baud_rate: 256000
+  parity: NONE
+  stop_bits: 1
 
 ld2450:
   id: ld2450_radar
